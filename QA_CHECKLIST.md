@@ -40,11 +40,22 @@ Run these checks in a modern browser (preferably a fresh browser profile) before
 - [ ] After first successful load, reopen the app offline and verify the shell opens on the same browser/device.
 - [ ] Remember: local browser data is not cloud-synced; test JSON transfer separately if moving devices.
 
+## Role-based access checks
+- [ ] Administrator sees all six modules and Settings & Data; can add/edit/delete records.
+- [ ] Manager sees all six modules; can add/edit records but cannot delete or access Settings & Data.
+- [ ] Inventory Staff sees Inventory only (plus Dashboard); can add/edit inventory but cannot access other modules or delete records.
+- [ ] Production Staff sees Planning and Production only (plus Dashboard); can add/edit those modules but cannot delete records.
+- [ ] Quality Staff sees Quality and Process & Inspection only (plus Dashboard); can add/edit those modules but cannot delete records.
+- [ ] Dispatch Staff sees Dispatch only (plus Dashboard); can add/edit dispatch but cannot delete records.
+- [ ] Directly entering a restricted module URL shows an access-restricted screen.
+- [ ] Confirm each role is tested with a separate authenticated account. Browser UI restrictions alone are not a security boundary for LocalStorage data.
+
 ## Supabase security setup
 - [ ] Run `supabase-schema.sql` in Supabase SQL Editor (already done for the current project).
-- [ ] Run `supabase-role-security-migration.sql` after the initial schema.
-- [ ] Verify each staff role can write only to its assigned module(s), and cannot delete records.
-- [ ] Verify Administrator can manage all module records.
+- [ ] Run the updated `supabase-role-security-migration.sql` after the initial schema (also updates the allowed role list).
+- [ ] Verify each staff role can read/write only its assigned cloud module(s), and cannot delete records.
+- [ ] Verify Manager can read/write all modules but cannot delete records.
+- [ ] Verify Administrator can manage all module records and delete records.
 - [ ] Verify non-admin users cannot insert/update/delete workspace memberships.
 - [ ] Test email confirmation and sign-in using the final GitHub Pages URL after setting Supabase Site URL and Redirect URLs.
 

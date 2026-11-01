@@ -17,7 +17,7 @@ create table if not exists public.workspace_members (
  workspace_id uuid not null references public.workspaces(id) on delete cascade,
  user_id uuid not null references auth.users(id) on delete cascade,
  role text not null default 'Administrator'
-  check (role in ('Administrator','Inventory Staff','Production Staff','Quality Staff','Dispatch Staff')),
+  check (role in ('Administrator','Manager','Inventory Staff','Production Staff','Quality Staff','Dispatch Staff')),
  active boolean not null default true,
  created_at timestamptz not null default now(),
  unique(workspace_id,user_id)

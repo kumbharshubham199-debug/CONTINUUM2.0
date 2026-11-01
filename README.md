@@ -19,7 +19,7 @@ Do not open the site with `file://`. The Supabase JS client is loaded from a CDN
 
 `supabase-config.js` contains the project URL and the Supabase **publishable** key. A publishable key is intended for browser use. Never put a Supabase secret/service-role key or database password in frontend files.
 
-The database foundation is installed separately in Supabase SQL Editor. The initial schema is in `supabase-schema.sql`. After it, run `supabase-role-security-migration.sql` to enforce module-level write permissions (Admin: all; Inventory Staff: inventory; Production Staff: planning/production; Quality Staff: quality/inspection; Dispatch Staff: dispatch). Configure Authentication → URL Configuration only after the final GitHub Pages URL is known:
+The database foundation is installed separately in Supabase SQL Editor. The initial schema is in `supabase-schema.sql`. After it, run `supabase-role-security-migration.sql` to enforce module-level read/write permissions (Administrator and Manager: all six modules; Inventory Staff: inventory; Production Staff: planning/production; Quality Staff: quality/inspection; Dispatch Staff: dispatch). Only Administrator can delete manufacturing records or access Settings & Data. Configure Authentication → URL Configuration only after the final GitHub Pages URL is known:
 
 - Site URL: the final GitHub Pages root URL.
 - Redirect URL: the final `login.html` URL.
@@ -56,7 +56,8 @@ Charts use actual activity records; they do not use generated sample data.
 - Supabase email sign-up/sign-in and workspace creation through the `create_workspace` database function.
 - Workspace membership lookup on authenticated entry.
 - Company name and user name retained in Supabase signup metadata.
-- Role-security SQL migration supplied to restrict module writes and keep activity history append-only.
+- Role-based navigation and page access for Administrator, Manager and four staff roles.
+- Role-security SQL migration restricts cloud record reads/writes by module; only Administrator can delete cloud records. Activity history remains append-only.
 - Manual cloud backup/restore of six module snapshots from Settings & Data.
 - Local JSON export and validated import.
 - Static app-shell caching for offline reopening after first successful online load.
@@ -66,8 +67,10 @@ Charts use actual activity records; they do not use generated sample data.
 This is an **academic project build, not a production-ready SaaS ERP**.
 
 - Manufacturing records continue to be stored locally by default. The Settings page provides a manual cloud snapshot upload/restore tool; automatic real-time sync, IndexedDB offline queue and conflict resolution are not implemented yet.
-- Employee invitation/deactivation flows are not implemented. Role-to-module write permissions are supplied as a separate SQL migration and become active only after you run it in Supabase. Do not invite employees or use real company data before applying and testing that migration.
+- Employee invitation/deactivation and in-app role assignment are not implemented. Create/authenticate staff accounts separately and assign their `workspace_members.role` through a trusted Supabase administrator workflow. Never expose a service-role key in browser code. Run the role-security migration and test each role before using real company data.
+- Role-based controls in the browser govern page navigation and actions, but manufacturing data is still stored in shared browser LocalStorage. This is not a secure multi-user data boundary. The Supabase migration protects cloud `manufacturing_records`; full multi-user operation requires moving module records to server-backed storage and testing it end-to-end.
 - Browser/email notifications and scheduled digests are not implemented.
+- Automated workflows and employee invitations are not implemented.
 - The service worker caches the app shell; it does not synchronize records offline.
 - The current manual cloud backup is a six-part workspace snapshot, not per-record continuous sync. Use one designated Admin to upload the authoritative snapshot; concurrent snapshot uploads can overwrite one another.
 - Manual cloud restore replaces the current browser's records. Export a JSON backup first.
@@ -79,7 +82,8 @@ This is an **academic project build, not a production-ready SaaS ERP**.
 - `style.css` — shared responsive UI and Warm Neutral theme.
 - `supabase-config.js` — public project URL and publishable key.
 - `supabase-schema.sql` — initial database foundation.
-- `supabase-role-security-migration.sql` — role-based write authorization hardening; run after the initial schema.
+- `supabase-role-security-migration.sql` — role-based read/write authorization hardening; run after the initial schema.
+- `ROLE_ACCESS_GUIDE.md` — role definitions, assignment guidance and testing notes.
 - `sw.js` / `manifest.webmanifest` — static offline cache and install metadata.
 - `QA_CHECKLIST.md` — manual functional test checklist.
 - `CLOUD_BACKEND_PLAN.md` — remaining cloud work and limitations.
